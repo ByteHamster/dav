@@ -547,6 +547,7 @@ SQL
         list($calendarId, $instanceId) = $calendarId;
 
         $extraData = $this->getDenormalizedData($calendarData);
+        error_log("extraData=" . var_export($extraData, true));
 
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([
@@ -636,8 +637,10 @@ SQL
         if (!$componentType) {
             throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
         }
+        error_log("componentType=" . $componentType);
         if ('VEVENT' === $componentType) {
             $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
+            error_log("firstOccurence=" . $firstOccurence);
             // Finding the last occurence is a bit harder
             if (!isset($component->RRULE)) {
                 if (isset($component->DTEND)) {
