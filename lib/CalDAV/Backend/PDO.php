@@ -637,19 +637,19 @@ SQL
             throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
         }
         if ('VEVENT' === $componentType) {
-            $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
+            $firstOccurence = $component->DTSTART->getDateTime()->format('U');
             // Finding the last occurence is a bit harder
             if (!isset($component->RRULE)) {
                 if (isset($component->DTEND)) {
-                    $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
+                    $lastOccurence = $component->DTEND->getDateTime()->format('U');
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate = $endDate->add(VObject\DateTimeParser::parse($component->DURATION->getValue()));
-                    $lastOccurence = $endDate->getTimeStamp();
+                    $lastOccurence = $endDate->format('U');
                 } elseif (!$component->DTSTART->hasTime()) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate = $endDate->modify('+1 day');
-                    $lastOccurence = $endDate->getTimeStamp();
+                    $lastOccurence = $endDate->format('U');
                 } else {
                     $lastOccurence = $firstOccurence;
                 }
@@ -657,14 +657,14 @@ SQL
                 $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
                 $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
-                    $lastOccurence = $maxDate->getTimeStamp();
+                    $lastOccurence = $maxDate->format('U');
                 } else {
                     $end = $it->getDtEnd();
                     while ($it->valid() && $end < $maxDate) {
                         $end = $it->getDtEnd();
                         $it->next();
                     }
-                    $lastOccurence = $end->getTimeStamp();
+                    $lastOccurence = $end->format('U');
                 }
             }
 
@@ -817,11 +817,11 @@ SQL
 
         if ($timeRange && $timeRange['start']) {
             $query .= ' AND lastoccurence > :startdate';
-            $values['startdate'] = $timeRange['start']->getTimeStamp();
+            $values['startdate'] = $timeRange['start']->format('U');
         }
         if ($timeRange && $timeRange['end']) {
             $query .= ' AND firstoccurence < :enddate';
-            $values['enddate'] = $timeRange['end']->getTimeStamp();
+            $values['enddate'] = $timeRange['end']->format('U');
         }
 
         $stmt = $this->pdo->prepare($query);
