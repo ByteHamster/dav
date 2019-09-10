@@ -640,7 +640,25 @@ SQL
         error_log("componentType=" . $componentType);
         if ('VEVENT' === $componentType) {
             $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
-            error_log("firstOccurence=" . $firstOccurence);
+
+            if (empty($firstOccurence)) {
+                error_log("---------------------------------------------------------");
+                error_log("---------------------------------------------------------");
+                error_log("-------------------- LOGGING SECTION --------------------");
+                error_log("---------------------------------------------------------");
+                error_log("---------------------------------------------------------");
+                error_log("calendarData=" . $calendarData);
+                error_log("firstOccurence1=" . $component->DTSTART);
+                error_log("firstOccurence2=" . $component->DTSTART->getValue());
+                error_log("firstOccurence3=" . $component->DTSTART->getDateTime()->format('Y-m-d H:i:s'));
+                error_log("firstOccurence4=" . $firstOccurence);
+                error_log("---------------------------------------------------------");
+                error_log("---------------------------------------------------------");
+                error_log("------------------ LOGGING SECTION END ------------------");
+                error_log("---------------------------------------------------------");
+                error_log("---------------------------------------------------------");
+            }
+
             // Finding the last occurence is a bit harder
             if (!isset($component->RRULE)) {
                 if (isset($component->DTEND)) {
